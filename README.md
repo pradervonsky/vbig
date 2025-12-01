@@ -1,11 +1,8 @@
 # VDIG: VLM Dashboard Insight Generator  
-*A lightweight agentic workflow for generating and validating insights from BI dashboards using small vision-language models.*
 
 ---
 
-## Overview
-
-**VDIG** is a prototype system that explores how **small Vision-Language Models (≤3B parameters)** can augment business intelligence workflows by generating **concise, human-readable insights from BI dashboard**.
+**VDIG** is a prototype system that explores how **small Vision-Language Models (≤3B parameters)** can augment business intelligence workflows by generating **concise, human-readable insights from BI dashboards**.
 
 The system combines:
 - **Vision-based insight generation** (VLMs)
