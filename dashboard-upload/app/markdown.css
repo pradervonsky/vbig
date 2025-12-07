@@ -1,0 +1,33 @@
+.markdown-body p {
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 24px 0 12px 0;
+  font-weight: 700;
+}
+
+.markdown-body ul {
+  margin: 12px 0 12px 20px;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.markdown-body li {
+  margin: 6px 0;
+}
+
+.markdown-body strong {
+  font-weight: 700;
+  color: #fff;
+}
+
+.markdown-body hr {
+  border: none;
+  height: 1px;
+  background: #333;
+  margin: 20px 0;
+}
