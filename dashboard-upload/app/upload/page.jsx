@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export default function UploadPage() {
   const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState("No file chosen");
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -16,51 +17,56 @@ export default function UploadPage() {
     });
 
     setLoading(false);
-    
+
     if (!res.ok) {
       alert("Upload failed!");
       return;
     }
-    
+
     alert("Upload complete!");
   };
-
-  const [fileName, setFileName] = useState("No file chosen");
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Mockup Daily Dashboard</h2>
-        <p style={styles.paragraph}>Temporary upload form of the dashboard screenshot. 
-            The plan is to automatically capture the KPI Superstore Sales dashboard from previous day at 05.00 AM daily and run it through the agentic workflow.</p>
-        <br />
+
+        <p style={styles.paragraph}>
+          Temporary upload form of the dashboard screenshot. The plan is to
+          automatically capture the KPI Superstore Sales dashboard from previous
+          day at 05.00 AM daily and run it through the agentic workflow.
+        </p>
+
         <form onSubmit={handleUpload} style={styles.form}>
-          {/* File Input */}
           <label style={styles.label}>Select PNG File</label>
 
-            <div style={styles.fileWrapper}>
+          <div style={styles.fileWrapper}>
             <input
-                id="fileInput"
-                type="file"
-                name="file"
-                accept="image/png"
-                required
-                style={styles.hiddenFile}
-                onChange={(e) => setFileName(e.target.files[0]?.name || "No file chosen")}
+              id="fileInput"
+              type="file"
+              name="file"
+              accept="image/png"
+              required
+              style={styles.hiddenFile}
+              onChange={(e) =>
+                setFileName(e.target.files[0]?.name || "No file chosen")
+              }
             />
 
-            <button type="button" onClick={() => document.getElementById("fileInput").click()} style={styles.fileButton}>
-                Choose File
+            <button
+              type="button"
+              onClick={() => document.getElementById("fileInput").click()}
+              style={styles.fileButton}
+            >
+              Choose File
             </button>
 
             <span style={styles.fileName}>{fileName}</span>
-            </div>
+          </div>
 
-          {/* Date Input */}
           <label style={styles.label}>Date</label>
           <input type="date" name="date" required style={styles.input} />
 
-          {/* Button */}
           <button type="submit" disabled={loading} style={styles.button}>
             {loading ? "Uploading..." : "Upload"}
           </button>
@@ -70,7 +76,7 @@ export default function UploadPage() {
   );
 }
 
-/* ------------------------- CSS (inline styles) ------------------------- */
+/* ------------------------- INLINE STYLES ------------------------- */
 
 const styles = {
   container: {
@@ -93,7 +99,7 @@ const styles = {
   title: {
     marginBottom: "20px",
     fontSize: "20px",
-    fontWeight: "600",
+    fontWeight: 600,
     textAlign: "center",
   },
   paragraph: {
@@ -109,7 +115,7 @@ const styles = {
   label: {
     fontSize: "14px",
     opacity: 0.9,
-    fontWeight: "600",
+    fontWeight: 600,
   },
   input: {
     padding: "10px",
@@ -118,12 +124,34 @@ const styles = {
     background: "#222",
     color: "#fff",
   },
-  inputFile: {
-    padding: "8px",
+  fileWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "#222",
+    padding: "10px",
     borderRadius: "6px",
     border: "1px solid #444",
-    background: "#222",
-    color: "#ccc",
+  },
+  hiddenFile: {
+    display: "none",
+  },
+  fileButton: {
+    background: "#444",
+    color: "#fff",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: 500,
+  },
+  fileName: {
+    color: "#bbb",
+    fontSize: "14px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
   button: {
     marginTop: "10px",
@@ -133,49 +161,8 @@ const styles = {
     borderRadius: "8px",
     color: "#fff",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: 600,
     cursor: "pointer",
     transition: "background 0.2s",
   },
-  fileWrapper: {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  background: "#222",
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #444",
-},
-
-hiddenFile: {
-  display: "none",
-},
-
-fileButton: {
-  background: "#444",
-  color: "#fff",
-  padding: "8px 16px",
-  borderRadius: "6px",
-  border: "none",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: 500,
-},
-
-fileButtonHover: {
-  background: "#555",
-},
-
-fileName: {
-  color: "#bbb",
-  fontSize: "14px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-},
-};
-
-// Hover effect (Next.js allows client-side JS)
-styles.button[":hover"] = {
-  background: "#4338ca",
 };

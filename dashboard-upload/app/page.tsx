@@ -4,10 +4,11 @@ import "./markdown.css";
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 // ------------------------- INLINE LAYOUT STYLES -------------------------
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   container: {
     minHeight: "100vh",
     display: "flex",
@@ -28,14 +29,12 @@ const styles = {
   title: {
     marginBottom: "20px",
     fontSize: "24px",
-    fontWeight: "700",
+    fontWeight: 700,
     textAlign: "left",
   },
   markdown: {
     color: "#ddd",
   },
-
-  // --- New Upload Button ---
   buttonWrapper: {
     marginTop: "30px",
     display: "flex",
@@ -48,13 +47,13 @@ const styles = {
     borderRadius: "8px",
     color: "#fff",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: 600,
     cursor: "pointer",
     transition: "background 0.2s",
   },
 };
 
-// ------------------------- RAW GITHUB README URL -------------------------
+// ------------------------- RAW README -------------------------
 
 const README_URL =
   "https://raw.githubusercontent.com/pradervonsky/vdig/main/README.md";
@@ -70,7 +69,7 @@ export default function HomePage() {
         const res = await fetch(README_URL);
         const text = await res.text();
         setMarkdown(text);
-      } catch (err) {
+      } catch {
         setMarkdown("⚠️ Failed to load README.md");
       }
     }
@@ -86,7 +85,6 @@ export default function HomePage() {
           <ReactMarkdown>{markdown}</ReactMarkdown>
         </div>
 
-        {/* Upload Button */}
         <div style={styles.buttonWrapper}>
           <Link href="/upload">
             <button
