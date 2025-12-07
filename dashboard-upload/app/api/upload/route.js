@@ -1,64 +1,53 @@
-export const runtime = "nodejs";
-
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+export const runtime = "nodejs"; // ensures Vercel creates a server function
+
 export async function POST(req) {
   try {
-    // Parse incoming multipart form-data
-    const form = await req.formData();
-    const file = form.get("file");
-    const date = form.get("date");
+    const formData = await req.formData();
+    const file = formData.get("file");
+    const date = formData.get("date");
 
     if (!file || !date) {
-      return NextResponse.json({ error: "Missing file or date" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing file or date" },
+        { status: 400 }
+      );
     }
 
-    // Convert file into a buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const fileName = `${date}_${file.name}`;
 
-    // -------------------------------
-    // Supabase client (server-side)
-    // -------------------------------
     const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY // OK on server-side ONLY
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE // must be private, stored in Vercel
     );
 
-    const BUCKET = "dashboards";
-    const filePath = `${date}_${file.name}`;
-
-    // Upload the file
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET)
-      .upload(filePath, buffer, {
+    const { data, error } = await supabase.storage
+      .from("dashboards")
+      .upload(fileName, fileBuffer, {
         contentType: file.type,
         upsert: true,
       });
 
-    if (uploadError) {
-      console.error("SUPABASE ERROR:", uploadError);
-      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    if (error) {
+      console.error("Supabase upload error:", error.message);
+      return NextResponse.json(
+        { error: "Supabase upload failed" },
+        { status: 500 }
+      );
     }
 
-    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filePath}`;
-
-    // -------------------------------
-    // Notify n8n webhook
-    // -------------------------------
-    await fetch(process.env.N8N_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date,
-        file_url: publicUrl
-      }),
+    return NextResponse.json({
+      success: true,
+      path: data.path,
     });
-
-    return NextResponse.json({ success: true, url: publicUrl });
   } catch (err) {
-    console.error("SERVER ERROR:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Route error:", err);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
   }
 }
