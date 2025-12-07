@@ -3,6 +3,7 @@
 import "./markdown.css";
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 
 // ------------------------- INLINE LAYOUT STYLES -------------------------
 
@@ -33,6 +34,28 @@ const styles = {
   markdown: {
     color: "#ddd",
   },
+
+  // --- New Upload Button ---
+  buttonWrapper: {
+    marginTop: "30px",
+    display: "flex",
+    justifyContent: "center",
+  },
+  button: {
+    padding: "12px 24px",
+    background: "#4f46e5",
+    border: "none",
+    borderRadius: "8px",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "background 0.2s",
+  },
+};
+
+styles.buttonHover = {
+  background: "#4338ca",
 };
 
 // ------------------------- RAW GITHUB README URL -------------------------
@@ -65,6 +88,19 @@ export default function HomePage() {
 
         <div className="markdown-body" style={styles.markdown}>
           <ReactMarkdown>{markdown}</ReactMarkdown>
+        </div>
+
+        {/* Upload Button */}
+        <div style={styles.buttonWrapper}>
+          <Link href="/upload">
+            <button
+              style={styles.button}
+              onMouseOver={(e) => (e.currentTarget.style.background = "#4338ca")}
+              onMouseOut={(e) => (e.currentTarget.style.background = "#4f46e5")}
+            >
+              Go to Upload Form
+            </button>
+          </Link>
         </div>
       </div>
     </div>
