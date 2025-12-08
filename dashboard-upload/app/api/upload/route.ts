@@ -17,17 +17,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert uploaded file to a Buffer
+    // Convert file into a buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${date}_${file.name}`;
 
     // Supabase admin client
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE!
     );
 
-    // Upload into "dashboards" bucket
+    // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from("dashboards")
       .upload(fileName, fileBuffer, {
@@ -35,36 +35,36 @@ export async function POST(req: NextRequest) {
         upsert: true,
       });
 
-    if (error || !data) {
-      console.error("Supabase upload error:", error?.message);
+    if (error) {
+      console.error("Supabase upload error:", error.message);
       return NextResponse.json(
         { error: "Supabase upload failed" },
         { status: 500 }
       );
     }
 
-    // ------------------------------
-    // 🔔 Notify n8n via webhook
-    // ------------------------------
+    // 🔥 CALL N8N WEBHOOK AFTER SUCCESSFUL UPLOAD
+    const webhookUrl = process.env.N8N_WEBHOOK_URL;
 
-    const webhookUrl = "http://localhost:5678/webhook/vdig-upload";
-
-    try {
+    if (webhookUrl) {
       await fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          filePath: data.path,
+          message: "upload_complete",
+          fileName,
+          supabasePath: data?.path,
           date,
         }),
       });
-    } catch (notifyErr) {
-      console.error("Failed to notify n8n:", notifyErr);
     }
-    // ------------------------------
+
+    // Respond to browser
     return NextResponse.json({
       success: true,
-      path: data.path,
+      path: data?.path,
     });
   } catch (err) {
     console.error("Route error:", err);

@@ -56,7 +56,7 @@ const styles: Record<string, CSSProperties> = {
 // ------------------------- RAW README -------------------------
 
 const README_URL =
-  "https://raw.githubusercontent.com/pradervonsky/vdig/main/README.md";
+  "https://raw.githubusercontent.com/pradervonsky/vbig/main/README.md";
 
 // ------------------------- COMPONENT -------------------------
 
@@ -79,8 +79,6 @@ export default function HomePage() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>vdig</h1>
-
         <div className="markdown-body" style={styles.markdown}>
           <ReactMarkdown>{markdown}</ReactMarkdown>
         </div>

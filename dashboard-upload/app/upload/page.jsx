@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export default function UploadPage() {
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [fileName, setFileName] = useState("No file chosen");
 
   const handleUpload = async (e) => {
@@ -10,7 +11,24 @@ export default function UploadPage() {
     setLoading(true);
 
     const formData = new FormData(e.target);
+    const date = formData.get("date");
 
+    // ------------- CHECK DATE BEFORE UPLOAD -------------
+    const check = await fetch("/api/check-date", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date }),
+    });
+
+    const checkJson = await check.json();
+
+    if (checkJson.exists) {
+      setLoading(false);
+      alert(`A dashboard for ${date} already exists in storage, choose another file.`);
+      return;
+    }
+
+    // ------------- PROCEED WITH UPLOAD -------------
     const res = await fetch("/api/upload", {
       method: "POST",
       body: formData,
@@ -23,16 +41,63 @@ export default function UploadPage() {
       return;
     }
 
-    alert("Upload complete!");
+    setSubmitted(true);
   };
 
+  // -----------------------------------------------------
+  // SUCCESS SCREEN
+  // -----------------------------------------------------
+  if (submitted) {
+    return (
+      <div style={styles.container}>
+        <div
+          style={{
+            ...styles.card,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h2 style={styles.title}>Submission Received!</h2>
+          <p style={{ ...styles.paragraph, textAlign: "center" }}>
+            Your dashboard screenshot has been successfully uploaded.
+          </p>
+
+          <button
+            style={styles.button}
+            onClick={() => {
+              setSubmitted(false);
+              setFileName("No file chosen");
+            }}
+          >
+            Submit another response
+          </button>
+
+          <button
+            style={{
+              ...styles.button,
+              marginTop: "10px",
+              background: "#333",
+            }}
+            onClick={() => (window.location.href = "/")}
+          >
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // -----------------------------------------------------
+  // UPLOAD FORM
+  // -----------------------------------------------------
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Mockup Daily Dashboard</h2>
 
         <p style={styles.paragraph}>
-          Temporary upload form of the dashboard screenshot. The plan is to
+          Temporary upload form for the dashboard screenshot. The plan is to
           automatically capture the KPI Superstore Sales dashboard from previous
           day at 05.00 AM daily and run it through the agentic workflow.
         </p>
@@ -76,8 +141,6 @@ export default function UploadPage() {
   );
 }
 
-/* ------------------------- INLINE STYLES ------------------------- */
-
 const styles = {
   container: {
     minHeight: "100vh",
@@ -93,19 +156,18 @@ const styles = {
     background: "#1c1c1c",
     padding: "28px",
     borderRadius: "12px",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
     color: "#fff",
   },
   title: {
-    marginBottom: "20px",
     fontSize: "20px",
-    fontWeight: 600,
+    fontWeight: "600",
     textAlign: "center",
+    marginBottom: "15px",
   },
   paragraph: {
-    marginBottom: "10px",
     fontSize: "16px",
     textAlign: "justify",
+    marginBottom: "20px",
   },
   form: {
     display: "flex",
@@ -114,14 +176,13 @@ const styles = {
   },
   label: {
     fontSize: "14px",
-    opacity: 0.9,
-    fontWeight: 600,
+    fontWeight: "600",
   },
   input: {
     padding: "10px",
+    background: "#222",
     borderRadius: "6px",
     border: "1px solid #444",
-    background: "#222",
     color: "#fff",
   },
   fileWrapper: {
@@ -133,36 +194,28 @@ const styles = {
     borderRadius: "6px",
     border: "1px solid #444",
   },
-  hiddenFile: {
-    display: "none",
-  },
+  hiddenFile: { display: "none" },
   fileButton: {
     background: "#444",
-    color: "#fff",
     padding: "8px 16px",
     borderRadius: "6px",
     border: "none",
+    color: "#fff",
     cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: 500,
   },
   fileName: {
     color: "#bbb",
     fontSize: "14px",
     overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
   },
   button: {
-    marginTop: "10px",
     padding: "12px",
     background: "#4f46e5",
     border: "none",
     borderRadius: "8px",
     color: "#fff",
     fontSize: "16px",
-    fontWeight: 600,
+    fontWeight: "600",
     cursor: "pointer",
-    transition: "background 0.2s",
   },
 };
