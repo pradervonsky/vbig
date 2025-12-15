@@ -14,6 +14,29 @@ export default function UploadPage() {
     const formData = new FormData(e.target);
     const date = formData.get("date");
 
+    const file = formData.get("file");
+
+    if (!file) {
+      setLoading(false);
+      alert("No file selected.");
+      return;
+    }
+
+    // ------------- 1MB max file size -------------
+    const MAX_SIZE = 512 * 512;
+
+    if (file.size > MAX_SIZE) {
+      setLoading(false);
+      alert("File size exceeds 1 MB. Please upload a smaller PNG file.");
+      return;
+    }
+
+    if (file.type !== "image/png") {
+      setLoading(false);
+      alert("Only PNG files are allowed.");
+      return;
+    }
+
     // ------------- CHECK DATE BEFORE UPLOAD -------------
     const check = await fetch("/api/check-date", {
       method: "POST",

@@ -20,6 +20,24 @@ export async function POST(req: NextRequest) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${date}_${file.name}`;
 
+    // ------------------------------
+    // VALIDATE FILE TYPE & SIZE
+    // ------------------------------
+    const MAX_SIZE = 1024 * 1024; // 1 MB
+
+    if (file.type !== "image/png") {
+      return NextResponse.json(
+        { error: "Only PNG files are allowed" },
+        { status: 415 }
+      );
+    }
+
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json(
+        { error: "File size exceeds 1 MB limit" },
+        { status: 413 }
+      );
+    }
 
     // ------------------------------
     // INIT SUPABASE SERVICE CLIENT
